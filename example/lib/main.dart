@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
+
 void main() {
   runApp(MyApp());
 }
@@ -102,14 +103,35 @@ class _MyHomePageState extends State<MyHomePage> {
                 items: _items,
                 title: Text("Animals"),
                 selectedColor: Colors.blue,
-                decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
-                  borderRadius: BorderRadius.all(Radius.circular(40)),
-                  border: Border.all(
-                    color: Colors.blue,
-                    width: 2,
-                  ),
-                ),
+                decoration: InputDecoration(
+                    disabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                        borderRadius: BorderRadius.circular(15),
+                        gapPadding: 8),
+                    errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Theme.of(context).errorColor),
+                        borderRadius: BorderRadius.circular(15),
+                        gapPadding: 8),
+                    focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Theme.of(context).errorColor),
+                        borderRadius: BorderRadius.circular(15),
+                        gapPadding: 8),
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(width: 2, color: Theme.of(context).accentColor),
+                        borderRadius: BorderRadius.circular(15),
+                        gapPadding: 8),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(width: 3, color: Theme.of(context).primaryColor),
+                        borderRadius: BorderRadius.circular(15),
+                        gapPadding: 8),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Theme.of(context).accentColor),
+                        borderRadius: BorderRadius.circular(15),
+                        gapPadding: 8),
+                    suffixStyle: Theme.of(context).textTheme.subtitle2,
+                    hintText: "hintText",
+                    labelText: "labelText",
+                    hintStyle: Theme.of(context).textTheme.subtitle1),
                 buttonIcon: Icon(
                   Icons.pets,
                   color: Colors.blue,

@@ -12,7 +12,7 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
   final MultiSelectListType? listType;
 
   /// Style the Container that makes up the field.
-  final BoxDecoration? decoration;
+  final InputDecoration? decoration;
 
   /// Set text that is displayed on the button.
   final Text? buttonText;
@@ -136,8 +136,7 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
             autovalidateMode: autovalidateMode,
             initialValue: initialValue ?? [],
             builder: (FormFieldState<List<V>> state) {
-              _MultiSelectDialogFieldView field =
-                  _MultiSelectDialogFieldView<V>(
+              _MultiSelectDialogFieldView field = _MultiSelectDialogFieldView<V>(
                 title: title,
                 items: items,
                 buttonText: buttonText,
@@ -173,7 +172,7 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
 // ignore: must_be_immutable
 class _MultiSelectDialogFieldView<V> extends StatefulWidget {
   final MultiSelectListType? listType;
-  final BoxDecoration? decoration;
+  final InputDecoration? decoration;
   final Text? buttonText;
   final Icon? buttonIcon;
   final Widget? title;
@@ -232,8 +231,7 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
   });
 
   /// This constructor allows a FormFieldState to be passed in. Called by MultiSelectDialogField.
-  _MultiSelectDialogFieldView._withState(
-      _MultiSelectDialogFieldView<V> field, FormFieldState<List<V>> state)
+  _MultiSelectDialogFieldView._withState(_MultiSelectDialogFieldView<V> field, FormFieldState<List<V>> state)
       : items = field.items,
         title = field.title,
         buttonText = field.buttonText,
@@ -264,12 +262,10 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
         state = state;
 
   @override
-  __MultiSelectDialogFieldViewState createState() =>
-      __MultiSelectDialogFieldViewState<V>();
+  __MultiSelectDialogFieldViewState createState() => __MultiSelectDialogFieldViewState<V>();
 }
 
-class __MultiSelectDialogFieldViewState<V>
-    extends State<_MultiSelectDialogFieldView<V>> {
+class __MultiSelectDialogFieldViewState<V> extends State<_MultiSelectDialogFieldView<V>> {
   List<V> _selectedItems = [];
 
   void initState() {
@@ -281,10 +277,8 @@ class __MultiSelectDialogFieldViewState<V>
 
   Widget _buildInheritedChipDisplay() {
     List<MultiSelectItem<V>?> chipDisplayItems = [];
-    chipDisplayItems = _selectedItems
-        .map((e) => widget.items
-            .firstWhereOrNull((element) => e == element.value))
-        .toList();
+    chipDisplayItems =
+        _selectedItems.map((e) => widget.items.firstWhereOrNull((element) => e == element.value)).toList();
     chipDisplayItems.removeWhere((element) => element == null);
     if (widget.chipDisplay != null) {
       // if user has specified a chipDisplay, use its params
@@ -309,8 +303,7 @@ class __MultiSelectDialogFieldViewState<V>
           },
           decoration: widget.chipDisplay!.decoration,
           chipColor: widget.chipDisplay!.chipColor ??
-              ((widget.selectedColor != null &&
-                      widget.selectedColor != Colors.transparent)
+              ((widget.selectedColor != null && widget.selectedColor != Colors.transparent)
                   ? widget.selectedColor!.withOpacity(0.35)
                   : null),
           alignment: widget.chipDisplay!.alignment,
@@ -328,8 +321,7 @@ class __MultiSelectDialogFieldViewState<V>
       return MultiSelectChipDisplay<V>(
         items: chipDisplayItems,
         colorator: widget.colorator,
-        chipColor: (widget.selectedColor != null &&
-                widget.selectedColor != Colors.transparent)
+        chipColor: (widget.selectedColor != null && widget.selectedColor != Colors.transparent)
             ? widget.selectedColor!.withOpacity(0.35)
             : null,
       );
@@ -381,48 +373,15 @@ class __MultiSelectDialogFieldViewState<V>
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        InkWell(
+        TextFormField(
+          readOnly: true,
+          decoration: widget.decoration,
           onTap: () {
             _showDialog(context);
           },
-          child: Container(
-            decoration: widget.state != null
-                ? widget.decoration ??
-                    BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: widget.state != null && widget.state!.hasError
-                              ? Colors.red.shade800.withOpacity(0.6)
-                              : _selectedItems.isNotEmpty
-                                  ? (widget.selectedColor != null &&
-                                          widget.selectedColor !=
-                                              Colors.transparent)
-                                      ? widget.selectedColor!
-                                      : Theme.of(context).primaryColor
-                                  : Colors.black45,
-                          width: _selectedItems.isNotEmpty
-                              ? (widget.state != null && widget.state!.hasError)
-                                  ? 1.4
-                                  : 1.8
-                              : 1.2,
-                        ),
-                      ),
-                    )
-                : widget.decoration,
-            padding: EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                widget.buttonText ?? Text("Select"),
-                widget.buttonIcon ?? Icon(Icons.arrow_downward),
-              ],
-            ),
-          ),
         ),
         _buildInheritedChipDisplay(),
-        widget.state != null && widget.state!.hasError
-            ? SizedBox(height: 5)
-            : Container(),
+        widget.state != null && widget.state!.hasError ? SizedBox(height: 5) : Container(),
         widget.state != null && widget.state!.hasError
             ? Row(
                 children: <Widget>[
