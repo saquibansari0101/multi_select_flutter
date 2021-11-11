@@ -12,13 +12,13 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
   final MultiSelectListType? listType;
 
   /// Style the Container that makes up the field.
-  final InputDecoration? decoration;
+  final InputDecoration decoration;
 
   /// Set text that is displayed on the button.
   final Text? buttonText;
 
   /// Specify the button icon.
-  final Icon? buttonIcon;
+  // final Icon? buttonIcon;
 
   /// The text at the top of the dialog.
   final Widget? title;
@@ -100,11 +100,11 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
   MultiSelectDialogField({
     required this.items,
     required this.onConfirm,
+    required this.decoration,
     this.title,
     this.buttonText,
-    this.buttonIcon,
+    // this.buttonIcon,
     this.listType,
-    this.decoration,
     this.onSelectionChanged,
     this.chipDisplay,
     this.searchable,
@@ -140,7 +140,7 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
                 title: title,
                 items: items,
                 buttonText: buttonText,
-                buttonIcon: buttonIcon,
+                // buttonIcon: buttonIcon,
                 chipDisplay: chipDisplay,
                 decoration: decoration,
                 listType: listType,
@@ -165,14 +165,14 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
                 selectedItemsTextStyle: selectedItemsTextStyle,
                 checkColor: checkColor,
               );
-              return _MultiSelectDialogFieldView<V?>._withState(field as _MultiSelectDialogFieldView<V?>, state);
+              return _MultiSelectDialogFieldView<V?>._withState(field as _MultiSelectDialogFieldView<V?>, state,);
             });
 }
 
 // ignore: must_be_immutable
 class _MultiSelectDialogFieldView<V> extends StatefulWidget {
   final MultiSelectListType? listType;
-  final InputDecoration? decoration;
+  final InputDecoration decoration;
   final Text? buttonText;
   final Icon? buttonIcon;
   final Widget? title;
@@ -202,11 +202,11 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
 
   _MultiSelectDialogFieldView({
     required this.items,
+    required this.decoration,
     this.title,
     this.buttonText,
     this.buttonIcon,
     this.listType,
-    this.decoration,
     this.onSelectionChanged,
     this.onConfirm,
     this.chipDisplay,
@@ -231,8 +231,10 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
   });
 
   /// This constructor allows a FormFieldState to be passed in. Called by MultiSelectDialogField.
-  _MultiSelectDialogFieldView._withState(_MultiSelectDialogFieldView<V> field, FormFieldState<List<V>> state)
-      : items = field.items,
+  _MultiSelectDialogFieldView._withState(
+    _MultiSelectDialogFieldView<V> field,
+    FormFieldState<List<V>> state,
+  )   : items = field.items,
         title = field.title,
         buttonText = field.buttonText,
         buttonIcon = field.buttonIcon,
@@ -267,6 +269,7 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
 
 class __MultiSelectDialogFieldViewState<V> extends State<_MultiSelectDialogFieldView<V>> {
   List<V> _selectedItems = [];
+  TextEditingController controller = TextEditingController();
 
   void initState() {
     super.initState();
@@ -283,7 +286,9 @@ class __MultiSelectDialogFieldViewState<V> extends State<_MultiSelectDialogField
     if (widget.chipDisplay != null) {
       // if user has specified a chipDisplay, use its params
       if (widget.chipDisplay!.disabled!) {
-        return Container();
+        return Container(
+          width: 10,
+        );
       } else {
         return MultiSelectChipDisplay<V>(
           items: chipDisplayItems,
@@ -362,6 +367,7 @@ class __MultiSelectDialogFieldViewState<V> extends State<_MultiSelectDialogField
             }
             _selectedItems = selected;
             if (widget.onConfirm != null) widget.onConfirm!(selected);
+            controller.text = _selectedItems.toList().toString();
           },
         );
       },
@@ -374,13 +380,35 @@ class __MultiSelectDialogFieldViewState<V> extends State<_MultiSelectDialogField
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         TextFormField(
+          enableInteractiveSelection: false,
           readOnly: true,
-          decoration: widget.decoration,
+          controller: controller,
+          decoration: InputDecoration(
+            suffixIcon: controller.text.isNotEmpty
+                ? _buildInheritedChipDisplay()
+                : Container(
+                    width: 10,
+                  ),
+            disabledBorder:
+                widget.decoration.disabledBorder ??OutlineInputBorder() ,
+            errorBorder: widget.decoration.errorBorder == null ? OutlineInputBorder() : widget.decoration.errorBorder,
+            focusedErrorBorder: widget.decoration.focusedErrorBorder == null
+                ? OutlineInputBorder()
+                : widget.decoration.focusedErrorBorder,
+            enabledBorder:
+                widget.decoration.enabledBorder == null ? OutlineInputBorder() : widget.decoration.enabledBorder,
+            focusedBorder:
+                widget.decoration.focusedBorder == null ? OutlineInputBorder() : widget.decoration.focusedBorder,
+            border: widget.decoration.border == null ? OutlineInputBorder() : widget.decoration.border,
+            hintText: widget.decoration.hintText == null ? "" : widget.decoration.hintText,
+            labelText: widget.decoration.labelText == null ? "" : widget.decoration.labelText,
+            hintStyle: widget.decoration.hintStyle == null ? TextStyle() : widget.decoration.hintStyle,
+            labelStyle: widget.decoration.labelStyle == null ? TextStyle() : widget.decoration.labelStyle,
+          ),
           onTap: () {
             _showDialog(context);
           },
         ),
-        _buildInheritedChipDisplay(),
         widget.state != null && widget.state!.hasError ? SizedBox(height: 5) : Container(),
         widget.state != null && widget.state!.hasError
             ? Row(

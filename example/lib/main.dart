@@ -100,9 +100,11 @@ class _MyHomePageState extends State<MyHomePage> {
               // Rounded blue MultiSelectDialogField
               //################################################################################################
               MultiSelectDialogField(
+                searchable: true,
+                chipDisplay: MultiSelectChipDisplay(),
                 items: _items,
                 title: Text("Animals"),
-                selectedColor: Colors.blue,
+                selectedColor: Colors.black,
                 decoration: InputDecoration(
                     disabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Theme.of(context).primaryColor),
@@ -132,10 +134,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     hintText: "hintText",
                     labelText: "labelText",
                     hintStyle: Theme.of(context).textTheme.subtitle1),
-                buttonIcon: Icon(
-                  Icons.pets,
-                  color: Colors.blue,
-                ),
                 buttonText: Text(
                   "Favorite Animals",
                   style: TextStyle(
@@ -152,113 +150,6 @@ class _MyHomePageState extends State<MyHomePage> {
               // This MultiSelectBottomSheetField has no decoration, but is instead wrapped in a Container that has
               // decoration applied. This allows the ChipDisplay to render inside the same Container.
               //################################################################################################
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(.4),
-                  border: Border.all(
-                    color: Theme.of(context).primaryColor,
-                    width: 2,
-                  ),
-                ),
-                child: Column(
-                  children: <Widget>[
-                    MultiSelectBottomSheetField(
-                      initialChildSize: 0.4,
-                      listType: MultiSelectListType.CHIP,
-                      searchable: true,
-                      buttonText: Text("Favorite Animals"),
-                      title: Text("Animals"),
-                      items: _items,
-                      onConfirm: (values) {
-                        _selectedAnimals2 = values;
-                      },
-                      chipDisplay: MultiSelectChipDisplay(
-                        onTap: (value) {
-                          setState(() {
-                            _selectedAnimals2.remove(value);
-                          });
-                        },
-                      ),
-                    ),
-                    _selectedAnimals2 == null || _selectedAnimals2.isEmpty
-                        ? Container(
-                            padding: EdgeInsets.all(10),
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "None selected",
-                              style: TextStyle(color: Colors.black54),
-                            ))
-                        : Container(),
-                  ],
-                ),
-              ),
-              SizedBox(height: 40),
-              //################################################################################################
-              // MultiSelectBottomSheetField with validators
-              //################################################################################################
-              MultiSelectBottomSheetField<Animal>(
-                key: _multiSelectKey,
-                initialChildSize: 0.7,
-                maxChildSize: 0.95,
-                title: Text("Animals"),
-                buttonText: Text("Favorite Animals"),
-                items: _items,
-                searchable: true,
-                validator: (values) {
-                  if (values == null || values.isEmpty) {
-                    return "Required";
-                  }
-                  List<String> names = values.map((e) => e.name).toList();
-                  if (names.contains("Frog")) {
-                    return "Frogs are weird!";
-                  }
-                  return null;
-                },
-                onConfirm: (values) {
-                  setState(() {
-                    _selectedAnimals3 = values;
-                  });
-                  _multiSelectKey.currentState.validate();
-                },
-                chipDisplay: MultiSelectChipDisplay(
-                  onTap: (item) {
-                    setState(() {
-                      _selectedAnimals3.remove(item);
-                    });
-                    _multiSelectKey.currentState.validate();
-                  },
-                ),
-              ),
-              SizedBox(height: 40),
-              //################################################################################################
-              // MultiSelectChipField
-              //################################################################################################
-              MultiSelectChipField(
-                items: _items,
-                initialValue: [_animals[4], _animals[7], _animals[9]],
-                title: Text("Animals"),
-                headerColor: Colors.blue.withOpacity(0.5),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue[700], width: 1.8),
-                ),
-                selectedChipColor: Colors.blue.withOpacity(0.5),
-                selectedTextStyle: TextStyle(color: Colors.blue[800]),
-                onTap: (values) {
-                  //_selectedAnimals4 = values;
-                },
-              ),
-              SizedBox(height: 40),
-              //################################################################################################
-              // MultiSelectDialogField with initial values
-              //################################################################################################
-              MultiSelectDialogField(
-                onConfirm: (val) {
-                  _selectedAnimals5 = val;
-                },
-                items: _items,
-                initialValue:
-                    _selectedAnimals5, // setting the value of this in initState() to pre-select values.
-              ),
             ],
           ),
         ),
