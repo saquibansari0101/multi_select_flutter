@@ -433,6 +433,7 @@ class __MultiSelectDialogFieldViewState<V> extends State<_MultiSelectDialogField
             labelText: widget.decoration.labelText == null ? "" : widget.decoration.labelText,
             hintStyle: widget.decoration.hintStyle == null ? TextStyle() : widget.decoration.hintStyle,
             labelStyle: widget.decoration.labelStyle == null ? TextStyle() : widget.decoration.labelStyle,
+            errorStyle: widget.decoration.errorStyle,
           ),
           onTap: () {
             _showDialog(context);
