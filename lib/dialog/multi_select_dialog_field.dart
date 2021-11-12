@@ -15,10 +15,11 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
   final InputDecoration decoration;
 
   /// Set text that is displayed on the button.
-  final Text? buttonText;
+  // final Text? buttonText;
 
   /// Specify the button icon.
   // final Icon? buttonIcon;
+  final ValueChanged<String>? onChanged;
 
   /// The text at the top of the dialog.
   final Widget? title;
@@ -91,18 +92,25 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
   /// Set the color of the check in the checkbox
   final Color? checkColor;
 
+  final TextEditingController controller;
+
   final AutovalidateMode autovalidateMode;
   final FormFieldValidator<List<V>>? validator;
   final FormFieldSetter<List<V>>? onSaved;
-  final GlobalKey<FormFieldState>? key;
+  final GlobalKey<FormFieldState>? formKey;
   FormFieldState<List<V>>? state;
+  Key? key;
+  FormFieldValidator<String>? validatorFunction;
 
   MultiSelectDialogField({
     required this.items,
     required this.onConfirm,
     required this.decoration,
+    required this.controller,
+    this.onChanged,
     this.title,
-    this.buttonText,
+    this.validatorFunction,
+    // this.buttonText,
     // this.buttonIcon,
     this.listType,
     this.onSelectionChanged,
@@ -127,8 +135,9 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
     this.onSaved,
     this.validator,
     this.initialValue,
-    this.autovalidateMode = AutovalidateMode.disabled,
     this.key,
+    this.autovalidateMode = AutovalidateMode.disabled,
+    this.formKey,
   }) : super(
             key: key,
             onSaved: onSaved,
@@ -137,35 +146,41 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
             initialValue: initialValue ?? [],
             builder: (FormFieldState<List<V>> state) {
               _MultiSelectDialogFieldView field = _MultiSelectDialogFieldView<V>(
-                title: title,
-                items: items,
-                buttonText: buttonText,
-                // buttonIcon: buttonIcon,
-                chipDisplay: chipDisplay,
-                decoration: decoration,
-                listType: listType,
-                onConfirm: onConfirm,
-                onSelectionChanged: onSelectionChanged,
-                initialValue: initialValue,
-                searchable: searchable,
-                confirmText: confirmText,
-                cancelText: cancelText,
-                barrierColor: barrierColor,
-                selectedColor: selectedColor,
-                searchHint: searchHint,
-                height: height,
-                colorator: colorator,
-                backgroundColor: backgroundColor,
-                unselectedColor: unselectedColor,
-                searchIcon: searchIcon,
-                closeSearchIcon: closeSearchIcon,
-                itemsTextStyle: itemsTextStyle,
-                searchTextStyle: searchTextStyle,
-                searchHintStyle: searchHintStyle,
-                selectedItemsTextStyle: selectedItemsTextStyle,
-                checkColor: checkColor,
+                  title: title,
+                  items: items,
+                  // buttonText: buttonText,
+                  // buttonIcon: buttonIcon,
+                  chipDisplay: chipDisplay,
+                  decoration: decoration,
+                  listType: listType,
+                  onConfirm: onConfirm,
+                  onSelectionChanged: onSelectionChanged,
+                  formKey: formKey,
+                  initialValue: initialValue,
+                  searchable: searchable,
+                  confirmText: confirmText,
+                  cancelText: cancelText,
+                  barrierColor: barrierColor,
+                  selectedColor: selectedColor,
+                  searchHint: searchHint,
+                  height: height,
+                  controller: controller,
+                  colorator: colorator,
+                  backgroundColor: backgroundColor,
+                  unselectedColor: unselectedColor,
+                  searchIcon: searchIcon,
+                  closeSearchIcon: closeSearchIcon,
+                  itemsTextStyle: itemsTextStyle,
+                  searchTextStyle: searchTextStyle,
+                  searchHintStyle: searchHintStyle,
+                  selectedItemsTextStyle: selectedItemsTextStyle,
+                  checkColor: checkColor,
+                  validatorFunction: validatorFunction,
+                  onChanged: onChanged);
+              return _MultiSelectDialogFieldView<V?>._withState(
+                field as _MultiSelectDialogFieldView<V?>,
+                state,
               );
-              return _MultiSelectDialogFieldView<V?>._withState(field as _MultiSelectDialogFieldView<V?>, state,);
             });
 }
 
@@ -173,6 +188,7 @@ class MultiSelectDialogField<V> extends FormField<List<V>> {
 class _MultiSelectDialogFieldView<V> extends StatefulWidget {
   final MultiSelectListType? listType;
   final InputDecoration decoration;
+  final FormFieldValidator<String>? validatorFunction;
   final Text? buttonText;
   final Icon? buttonIcon;
   final Widget? title;
@@ -199,11 +215,18 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
   final TextStyle? searchHintStyle;
   final Color? checkColor;
   FormFieldState<List<V>>? state;
+  TextEditingController controller;
+  ValueChanged<String>? onChanged;
+  final GlobalKey<FormFieldState>? formKey;
 
   _MultiSelectDialogFieldView({
     required this.items,
     required this.decoration,
+    required this.controller,
+    this.validatorFunction,
     this.title,
+    this.formKey,
+    this.onChanged,
     this.buttonText,
     this.buttonIcon,
     this.listType,
@@ -238,6 +261,7 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
         title = field.title,
         buttonText = field.buttonText,
         buttonIcon = field.buttonIcon,
+        formKey = field.formKey,
         listType = field.listType,
         decoration = field.decoration,
         onSelectionChanged = field.onSelectionChanged,
@@ -261,6 +285,9 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
         searchTextStyle = field.searchTextStyle,
         selectedItemsTextStyle = field.selectedItemsTextStyle,
         checkColor = field.checkColor,
+        controller = field.controller,
+        validatorFunction = field.validatorFunction,
+        onChanged = field.onChanged,
         state = state;
 
   @override
@@ -269,7 +296,6 @@ class _MultiSelectDialogFieldView<V> extends StatefulWidget {
 
 class __MultiSelectDialogFieldViewState<V> extends State<_MultiSelectDialogFieldView<V>> {
   List<V> _selectedItems = [];
-  TextEditingController controller = TextEditingController();
 
   void initState() {
     super.initState();
@@ -367,7 +393,7 @@ class __MultiSelectDialogFieldViewState<V> extends State<_MultiSelectDialogField
             }
             _selectedItems = selected;
             if (widget.onConfirm != null) widget.onConfirm!(selected);
-            controller.text = _selectedItems.toList().toString();
+            widget.controller.text = _selectedItems.toList().toString();
           },
         );
       },
@@ -382,15 +408,18 @@ class __MultiSelectDialogFieldViewState<V> extends State<_MultiSelectDialogField
         TextFormField(
           enableInteractiveSelection: false,
           readOnly: true,
-          controller: controller,
+          autofocus: false,
+          controller: widget.controller,
+          validator: widget.validatorFunction,
+          onChanged: widget.onChanged,
+          key: widget.key,
           decoration: InputDecoration(
-            suffixIcon: controller.text.isNotEmpty
+            suffixIcon: widget.controller.text.isNotEmpty
                 ? _buildInheritedChipDisplay()
                 : Container(
                     width: 10,
                   ),
-            disabledBorder:
-                widget.decoration.disabledBorder ??OutlineInputBorder() ,
+            disabledBorder: widget.decoration.disabledBorder ?? OutlineInputBorder(),
             errorBorder: widget.decoration.errorBorder == null ? OutlineInputBorder() : widget.decoration.errorBorder,
             focusedErrorBorder: widget.decoration.focusedErrorBorder == null
                 ? OutlineInputBorder()
@@ -409,23 +438,6 @@ class __MultiSelectDialogFieldViewState<V> extends State<_MultiSelectDialogField
             _showDialog(context);
           },
         ),
-        widget.state != null && widget.state!.hasError ? SizedBox(height: 5) : Container(),
-        widget.state != null && widget.state!.hasError
-            ? Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4),
-                    child: Text(
-                      widget.state!.errorText!,
-                      style: TextStyle(
-                        color: Colors.red[800],
-                        fontSize: 12.5,
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            : Container(),
       ],
     );
   }

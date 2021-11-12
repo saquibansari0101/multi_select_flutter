@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
@@ -14,6 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        errorColor: Colors.red
       ),
       home: MyHomePage(title: 'Flutter Multi Select'),
     );
@@ -38,6 +41,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final GlobalKey<FormFieldState> _nameFormKey = GlobalKey<FormFieldState>();
+  TextEditingController controller = TextEditingController();
   static List<Animal> _animals = [
     Animal(id: 1, name: "Lion"),
     Animal(id: 2, name: "Flamingo"),
@@ -70,16 +75,12 @@ class _MyHomePageState extends State<MyHomePage> {
   final _items = _animals
       .map((animal) => MultiSelectItem<Animal>(animal, animal.name))
       .toList();
-  //List<Animal> _selectedAnimals = [];
-  List<Animal> _selectedAnimals2 = [];
-  List<Animal> _selectedAnimals3 = [];
-  //List<Animal> _selectedAnimals4 = [];
-  List<Animal> _selectedAnimals5 = [];
+  List<String> _selectedValues = [];
+  final formKey = GlobalKey<FormState>();
   final _multiSelectKey = GlobalKey<FormFieldState>();
 
   @override
   void initState() {
-    _selectedAnimals5 = _animals;
     super.initState();
   }
 
@@ -99,51 +100,80 @@ class _MyHomePageState extends State<MyHomePage> {
               //################################################################################################
               // Rounded blue MultiSelectDialogField
               //################################################################################################
-              MultiSelectDialogField(
-                searchable: true,
-                chipDisplay: MultiSelectChipDisplay(),
-                items: _items,
-                title: Text("Animals"),
-                selectedColor: Colors.black,
-                decoration: InputDecoration(
-                    disabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                        borderRadius: BorderRadius.circular(15),
-                        gapPadding: 8),
-                    errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Theme.of(context).errorColor),
-                        borderRadius: BorderRadius.circular(15),
-                        gapPadding: 8),
-                    focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Theme.of(context).errorColor),
-                        borderRadius: BorderRadius.circular(15),
-                        gapPadding: 8),
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 2, color: Theme.of(context).accentColor),
-                        borderRadius: BorderRadius.circular(15),
-                        gapPadding: 8),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 3, color: Theme.of(context).primaryColor),
-                        borderRadius: BorderRadius.circular(15),
-                        gapPadding: 8),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Theme.of(context).accentColor),
-                        borderRadius: BorderRadius.circular(15),
-                        gapPadding: 8),
-                    suffixStyle: Theme.of(context).textTheme.subtitle2,
-                    hintText: "hintText",
-                    labelText: "labelText",
-                    hintStyle: Theme.of(context).textTheme.subtitle1),
-                buttonText: Text(
-                  "Favorite Animals",
-                  style: TextStyle(
-                    color: Colors.blue[800],
-                    fontSize: 16,
-                  ),
+              Form(
+                key: formKey,
+                child: MultiSelectDialogField(
+                  searchable: true,
+                  validator: (value){
+                    return "shit";
+                  },
+                  chipDisplay: MultiSelectChipDisplay(),
+                  items: _items,
+                  key: _multiSelectKey,
+                  formKey: _nameFormKey,
+                  title: Text("Animals"),
+                  validatorFunction: (value) {
+                    log(value);
+                    RegExp regex = new RegExp(r"\[]");
+                    return controller.text == "[]"
+                        ? "LocaleKeys.text_enter_valid_contact_number.tr()"
+                        : null;
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      formKey.currentState.validate();
+                    });
+                  },
+                  selectedColor: Colors.black,
+                  decoration: InputDecoration(
+                      disabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                          borderRadius: BorderRadius.circular(15),
+                          gapPadding: 8),
+                      errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Theme.of(context).errorColor),
+                          borderRadius: BorderRadius.circular(15),
+                          gapPadding: 8),
+                      focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Theme.of(context).errorColor),
+                          borderRadius: BorderRadius.circular(15),
+                          gapPadding: 8),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(width: 2, color: Theme.of(context).accentColor),
+                          borderRadius: BorderRadius.circular(15),
+                          gapPadding: 8),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(width: 3, color: Theme.of(context).primaryColor),
+                          borderRadius: BorderRadius.circular(15),
+                          gapPadding: 8),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Theme.of(context).accentColor),
+                          borderRadius: BorderRadius.circular(15),
+                          gapPadding: 8),
+                      suffixStyle: Theme.of(context).textTheme.subtitle2,
+                      hintText: "hintText",
+                      labelText: "labelText",
+                      hintStyle: Theme.of(context).textTheme.subtitle1),
+                  controller: controller,
+                  onConfirm: (results) {
+                    List<Animal> _selectedAnimals = [];
+                    _selectedAnimals = results.cast<Animal>();
+
+                    // results.forEach((element) {
+                    //   _selectedAnimals.add(element as Animal);
+                    // });
+                    _selectedValues.clear();
+                    _selectedAnimals.forEach((element) {_selectedValues.add(element.name);});
+                    controller.text = _selectedValues.toString();
+                    log(_selectedValues.toString());
+                    setState(() {
+                      formKey.currentState.validate();
+                    });
+                    // log(_nameFormKey.currentState.validate().toString());
+                    // log(_nameFormKey.currentState.isValid.toString());
+                    // _nameFormKey.currentState.isValid = false;
+                  },
                 ),
-                onConfirm: (results) {
-                  //_selectedAnimals = results;
-                },
               ),
               SizedBox(height: 50),
               //################################################################################################
