@@ -416,9 +416,11 @@ class __MultiSelectDialogFieldViewState<V> extends State<_MultiSelectDialogField
           decoration: InputDecoration(
             suffixIcon: widget.controller.text.isNotEmpty
                 ? _buildInheritedChipDisplay()
-                : Container(
-                    width: 10,
-                  ),
+                : widget.decoration.suffixIcon == null
+                    ? Container(
+                        width: 10,
+                      )
+                    : widget.decoration.suffixIcon,
             disabledBorder: widget.decoration.disabledBorder ?? OutlineInputBorder(),
             errorBorder: widget.decoration.errorBorder == null ? OutlineInputBorder() : widget.decoration.errorBorder,
             focusedErrorBorder: widget.decoration.focusedErrorBorder == null

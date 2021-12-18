@@ -151,6 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           borderRadius: BorderRadius.circular(15),
                           gapPadding: 8),
                       suffixStyle: Theme.of(context).textTheme.subtitle2,
+                      suffixIcon: Icon(Icons.eleven_mp),
                       hintText: "hintText",
                       labelText: "labelText",
                       hintStyle: Theme.of(context).textTheme.subtitle1),
